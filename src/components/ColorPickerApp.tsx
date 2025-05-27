@@ -11,6 +11,7 @@ import { Input } from './ui/input';
 import { PinControlRulesProvider } from '../contexts/PinControlRulesContext';
 import { ControlPanel } from './color-picker/ControlPanel';
 import { ModeSelector } from './color-picker/ModeSelector';
+import { ColorAI } from './ai/ColorAI';
 
 interface SerialPort {
   writable: WritableStream<Uint8Array> | null;
@@ -23,7 +24,7 @@ interface SerialPort {
 export function ColorPickerApp() {
   const { addReceivedData, addSentData, clearReceivedData, receivedData, sentData, history } = useColorContext();
   const [serialDataInput, setSerialDataInput] = useState('');
-  const [mode, setMode] = useState<'data' | 'control'>('data');
+  const [mode, setMode] = useState<'data' | 'control' | 'ai'>('data');
 
   const dataReceivePortRef = useRef<SerialPort | null>(null);
   const [isDataReceivePortConnected, setIsDataReceivePortConnected] = useState(false);
@@ -89,10 +90,20 @@ export function ColorPickerApp() {
     }
   }, [dataSendWriterRef, addSentData]);
 
-  const handleModeChange = useCallback((newMode: 'data' | 'control') => {
+  const handleModeChange = useCallback((newMode: 'data' | 'control' | 'ai') => {
     setMode(newMode);
     toast.info(`Switched to ${newMode.toUpperCase()} Mode`);
   }, []);
+
+  const handleAIColorSelection = useCallback((colorHex: string) => {
+    const r = parseInt(colorHex.slice(1, 3), 16);
+    const g = parseInt(colorHex.slice(3, 5), 16);
+    const b = parseInt(colorHex.slice(5, 7), 16);
+    
+    const rgbCommand = `RGB:${r},${g},${b}`;
+    
+    handleSendSerialData(rgbCommand);
+  }, [handleSendSerialData]);
 
   return (
     <PinControlRulesProvider>
@@ -197,6 +208,16 @@ export function ColorPickerApp() {
             <div className="mt-8">
               <h2 className="text-2xl font-bold mb-4">Control Panel</h2>
               <ControlPanel sendCommand={handleSendSerialData} isConnected={isDataSendPortConnected} writer={dataSendWriterRef.current} />
+            </div>
+          )}
+
+          {mode === 'ai' && (
+            <div className="mt-8">
+              <h2 className="text-2xl font-bold mb-4">AI Color Assistant</h2>
+              <ColorAI 
+                onSelectColor={handleAIColorSelection} 
+                isConnected={isDataSendPortConnected} 
+              />
             </div>
           )}
 
