@@ -1,10 +1,10 @@
 import { motion } from 'framer-motion';
 import { Tabs, TabsList, TabsTrigger } from '../ui/tabs';
-import { ArrowDownToLine, Sliders } from 'lucide-react';
+import { ArrowDownToLine, Sliders, Brain } from 'lucide-react';
 
 interface ModeSelectorProps {
-  mode: 'data' | 'control';
-  onChange: (mode: 'data' | 'control') => void;
+  mode: 'data' | 'control' | 'ai';
+  onChange: (mode: 'data' | 'control' | 'ai') => void;
 }
 
 export function ModeSelector({ mode, onChange }: ModeSelectorProps) {
@@ -17,10 +17,10 @@ export function ModeSelector({ mode, onChange }: ModeSelectorProps) {
     >
       <Tabs 
         value={mode} 
-        onValueChange={(value) => onChange(value as 'data' | 'control')}
+        onValueChange={(value) => onChange(value as 'data' | 'control' | 'ai')}
         className="w-full"
       >
-        <TabsList className="grid grid-cols-2 w-full">
+        <TabsList className="grid grid-cols-3 w-full">
           <TabsTrigger value="data" className="flex items-center gap-2">
             <ArrowDownToLine size={16} />
             <span>Data Mode</span>
@@ -28,6 +28,10 @@ export function ModeSelector({ mode, onChange }: ModeSelectorProps) {
           <TabsTrigger value="control" className="flex items-center gap-2">
             <Sliders size={16} />
             <span>Control Mode</span>
+          </TabsTrigger>
+          <TabsTrigger value="ai" className="flex items-center gap-2">
+            <Brain size={16} />
+            <span>AI Mode</span>
           </TabsTrigger>
         </TabsList>
       </Tabs>
