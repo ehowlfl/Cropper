@@ -34,7 +34,7 @@ export function ColorPickerApp() {
   const [isDataSendPortConnected, setIsDataSendPortConnected] = useState(false);
 
   const handleReceivedData = useCallback(async (data: string): Promise<void> => {
-    console.log('Received raw data from Board 1:', data);
+    console.log('보드 1로부터 원시 데이터 수신:', data);
     let parts: number[] = [];
 
     if (data.startsWith('RGB:')) {
@@ -46,26 +46,26 @@ export function ColorPickerApp() {
         const hexColor = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()}`;
         
         addReceivedData(hexColor);
-        toast.success(`Received Color: ${hexColor}`);
+        toast.success(`색상 수신: ${hexColor}`);
 
         if (mode === 'data' && dataSendWriterRef.current) {
           const textEncoder = new TextEncoder();
           try {
             await dataSendWriterRef.current.write(textEncoder.encode(data + '\n'));
             addSentData(data);
-            toast.info(`Auto-sent to Arduino 2: ${data}`);
+            toast.info(`아두이노 2로 자동 전송: ${data}`);
           } catch (error) {
             console.error('Error auto-sending data to Board 2:', error);
-            toast.error('Error auto-sending data: ' + (error as Error).message);
+            toast.error('자동 데이터 전송 오류: ' + (error as Error).message);
           }
         } else if (mode === 'data' && !dataSendPortRef.current?.writable) {
-          toast.info('Arduino Board 2 (Data Send) not connected or not writable for auto-sending.');
+          toast.info('아두이노 보드 2 (데이터 전송)가 연결되지 않았거나 자동 전송을 위해 쓰기 가능하지 않습니다.');
         }
       } else {
-        toast.error('Received invalid RGB format');
+        toast.error('잘못된 RGB 형식 수신');
       }
     } else {
-      toast.info(`Received non-RGB data: ${data}`);
+      toast.info(`RGB가 아닌 데이터 수신: ${data}`);
     }
   }, [mode, dataSendWriterRef, dataSendPortRef, addReceivedData, addSentData]);
 
@@ -76,13 +76,13 @@ export function ColorPickerApp() {
         try {
           await dataSendWriterRef.current.write(textEncoder.encode(data + '\n'));
           addSentData(data);
-          toast.success('Data sent to Arduino 2: ' + data);
+          toast.success('아두이노 2로 데이터 전송: ' + data);
         } catch (error) {
           console.error('Error sending data to Arduino 2:', error);
-          toast.error('Error sending data to Arduino 2: ' + (error as Error).message);
+          toast.error('아두이노 2로 데이터 전송 중 오류: ' + (error as Error).message);
         }
       } else {
-        toast.info("Arduino Board 2 (Data Send) not connected or writer not available.");
+        toast.info("아두이노 보드 2 (데이터 전송)가 연결되지 않았거나 쓰기 도구를 사용할 수 없습니다.");
       }
     } else {
       // For empty data, perhaps do nothing or show a specific toast
@@ -91,7 +91,7 @@ export function ColorPickerApp() {
 
   const handleModeChange = useCallback((newMode: 'data' | 'control') => {
     setMode(newMode);
-    toast.info(`Switched to ${newMode.toUpperCase()} Mode`);
+    toast.info(`${newMode.toUpperCase()} 모드로 전환됨`);
   }, []);
 
   return (
@@ -105,7 +105,7 @@ export function ColorPickerApp() {
         >
           <header className="text-center mb-8">
             <h1 className="text-4xl font-extrabold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-              Arduino Color Picker
+              아두이노 색상 선택기
             </h1>
             <motion.p
               initial={{ opacity: 0 }}
@@ -113,35 +113,35 @@ export function ColorPickerApp() {
               transition={{ delay: 0.3, duration: 0.5 }}
               className="text-lg text-gray-300"
             >
-              Select, identify, and display colors from Arduino via USB Serial
+              USB 시리얼을 통해 아두이노에서 색상 선택, 식별 및 표시
             </motion.p>
           </header>
 
           <Card>
             <CardContent className="p-6">
-              <h2 className="text-lg font-semibold mb-2">📌 Mode Description</h2>
-              <p className="mb-2"><strong>Data Mode:</strong> Receive and display color values from Arduino</p>
-              <p><strong>Control Mode:</strong> Directly control Arduino LEDs by sending color commands.</p>
+              <h2 className="text-lg font-semibold mb-2">📌 모드 설명</h2>
+              <p className="mb-2"><strong>데이터 모드:</strong> 아두이노에서 색상 값을 수신하고 표시합니다.</p>
+              <p><strong>제어 모드:</strong> 색상 명령을 전송하여 아두이노 LED를 직접 제어합니다.</p>
             </CardContent>
           </Card>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
             <div>
-              <h3 className="text-lg font-semibold mb-2">Arduino Board 1 (Data Receive)</h3>
+              <h3 className="text-lg font-semibold mb-2">아두이노 보드 1 (데이터 수신)</h3>
               <SerialConnector 
                 onConnect={(port, writer) => {
-                  console.log('Connected to Arduino Board 1 (Data Receive):', port);
+                  console.log('아두이노 보드 1 (데이터 수신)에 연결됨:', port);
                   dataReceivePortRef.current = port;
                   controlWriterRef.current = writer;
                   setIsDataReceivePortConnected(true);
-                  toast.success('Connected to Arduino Board 1');
+                  toast.success('아두이노 보드 1에 연결됨');
                 }} 
                 onDisconnect={() => {
-                  console.log('Disconnected from Arduino Board 1 (Data Receive)');
+                  console.log('아두이노 보드 1 (데이터 수신) 연결 해제됨');
                   dataReceivePortRef.current = null;
                   controlWriterRef.current = null;
                   setIsDataReceivePortConnected(false);
-                  toast.info('Disconnected from Arduino Board 1');
+                  toast.info('아두이노 보드 1 연결 해제됨');
                 }}
                 onData={handleReceivedData} 
                 isConnected={isDataReceivePortConnected} 
@@ -149,21 +149,21 @@ export function ColorPickerApp() {
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold mb-2">Arduino Board 2 (Data Send)</h3>
+              <h3 className="text-lg font-semibold mb-2">아두이노 보드 2 (데이터 전송)</h3>
               <SerialConnector 
                 onConnect={(port, writer) => {
-                  console.log('Connected to Arduino Board 2 (Data Send):', port);
+                  console.log('아두이노 보드 2 (데이터 전송)에 연결됨:', port);
                   dataSendPortRef.current = port;
                   dataSendWriterRef.current = writer;
                   setIsDataSendPortConnected(true);
-                  toast.success('Connected to Arduino Board 2');
+                  toast.success('아두이노 보드 2에 연결됨');
                 }} 
                 onDisconnect={() => {
-                  console.log('Disconnected from Arduino Board 2 (Data Send)');
+                  console.log('아두이노 보드 2 (데이터 전송) 연결 해제됨');
                   dataSendPortRef.current = null;
                   dataSendWriterRef.current = null;
                   setIsDataSendPortConnected(false);
-                  toast.info('Disconnected from Arduino Board 2');
+                  toast.info('아두이노 보드 2 연결 해제됨');
                 }}
                 onData={() => { /* Board 2 is send-only in this context */ }} 
                 isConnected={isDataSendPortConnected} 
@@ -172,7 +172,7 @@ export function ColorPickerApp() {
                 <div className="w-full flex flex-col items-center space-y-4 mt-4">
                   <Input
                     type="text"
-                    placeholder="Enter data to send (e.g., RGB:255,0,0)"
+                    placeholder="전송할 데이터 입력 (예: RGB:255,0,0)"
                     value={serialDataInput}
                     onChange={(e) => setSerialDataInput(e.target.value)}
                     className="w-full max-w-md p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
@@ -182,7 +182,7 @@ export function ColorPickerApp() {
                     disabled={!isDataSendPortConnected}
                     className="bg-green-500 hover:bg-green-600 text-white w-full max-w-md"
                   >
-                    Send to Arduino 2
+                    아두이노 2로 전송
                   </Button>
                 </div>
               )}
@@ -195,7 +195,7 @@ export function ColorPickerApp() {
 
           {mode === 'control' && (
             <div className="mt-8">
-              <h2 className="text-2xl font-bold mb-4">Control Panel</h2>
+              <h2 className="text-2xl font-bold mb-4">제어판</h2>
               <ControlPanel sendCommand={handleSendSerialData} isConnected={isDataSendPortConnected} writer={dataSendWriterRef.current} />
             </div>
           )}

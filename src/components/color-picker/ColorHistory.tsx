@@ -18,9 +18,9 @@ export function ColorHistory({ history }: ColorHistoryProps) {
       <div className="border rounded-lg p-4">
         <div className="flex items-center gap-2 mb-2">
           <Clock size={16} />
-          <h2 className="text-lg font-semibold">Color History</h2>
+          <h2 className="text-lg font-semibold">색상 기록</h2>
         </div>
-        <p className="text-muted-foreground text-sm">No colors in history yet</p>
+        <p className="text-muted-foreground text-sm">아직 기록된 색상이 없습니다</p>
       </div>
     );
   }
@@ -29,7 +29,7 @@ export function ColorHistory({ history }: ColorHistoryProps) {
     <div className="border rounded-lg p-4">
       <div className="flex items-center gap-2 mb-2">
         <Clock size={16} />
-        <h2 className="text-lg font-semibold">Color History</h2>
+        <h2 className="text-lg font-semibold">색상 기록</h2>
       </div>
       <Separator className="my-2" />
       <ScrollArea className="h-48">

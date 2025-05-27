@@ -55,8 +55,8 @@ export function PinControlSettingsModal({ isOpen, onClose, onPickColorFromDevice
         pn < 0 /* 아두이노 핀 번호 범위에 맞게 조정 */ ) {
       toast({
         variant: "destructive",
-        title: "Validation Error",
-        description: "Please enter valid numbers for RGB (0-255) and Pin Number (e.g., 0-13).",
+        title: "유효성 검사 오류",
+        description: "RGB (0-255) 및 핀 번호 (예: 0-13)에 유효한 숫자를 입력하세요.",
       });
       return;
     }
@@ -64,8 +64,8 @@ export function PinControlSettingsModal({ isOpen, onClose, onPickColorFromDevice
     if (!pinNumber) {
       toast({
         variant: "destructive",
-        title: "Pin Not Selected",
-        description: "Please select a pin to control.",
+        title: "핀 미선택",
+        description: "제어할 핀을 선택하세요.",
       });
       return;
     }
@@ -75,8 +75,8 @@ export function PinControlSettingsModal({ isOpen, onClose, onPickColorFromDevice
       console.error('Invalid pin number selected:', pinNumber);
       toast({
         variant: "destructive",
-        title: "Invalid Pin",
-        description: "Please select a valid pin number (2, 3, or 4).",
+        title: "잘못된 핀",
+        description: "유효한 핀 번호 (2, 3 또는 4)를 선택하세요.",
       });
       return;
     }
@@ -96,14 +96,14 @@ export function PinControlSettingsModal({ isOpen, onClose, onPickColorFromDevice
     if (ruleId) {
       updateRule(ruleId, ruleData);
       toast({
-        title: "Rule Updated",
-        description: `Rule ${ruleId} updated successfully.`,
+        title: "규칙 업데이트됨",
+        description: `규칙 ${ruleId}이(가) 성공적으로 업데이트되었습니다.`,
       });
     } else {
       addRule(ruleData);
       toast({
-        title: "Rule Added",
-        description: `Rule added successfully.`,
+        title: "규칙 추가됨",
+        description: `규칙이 성공적으로 추가되었습니다.`,
       });
     }
 
@@ -125,8 +125,8 @@ export function PinControlSettingsModal({ isOpen, onClose, onPickColorFromDevice
         await writer.write(textEncoder.encode(`[${ruleCommandString}]\n`)); 
         console.log(`PinControlSettingsModal: Sent RULE command to Arduino: [${ruleCommandString}]`);
         toast({
-          title: "Command Sent",
-          description: "Rule command sent to Arduino.",
+          title: "명령 전송됨",
+          description: "규칙 명령이 아두이노로 전송되었습니다.",
         });
 
         if (onRuleSet) {
@@ -142,16 +142,16 @@ export function PinControlSettingsModal({ isOpen, onClose, onPickColorFromDevice
         console.error('Error sending command to Arduino:', error);
         toast({
           variant: "destructive",
-          title: "Command Send Error",
-          description: `Error sending command: ${error instanceof Error ? error.message : String(error)}`,
+          title: "명령 전송 오류",
+          description: `명령 전송 중 오류: ${error instanceof Error ? error.message : String(error)}`,
         });
       }
     } else {
       console.error('Serial writer not available for RULE command. Is HC-06 connected?');
       toast({
         variant: "destructive",
-        title: "HC-06 Connection Error",
-        description: "HC-06 is not connected or writer not ready for RULE. Please connect and try again.",
+        title: "HC-06 연결 오류",
+        description: "HC-06이 연결되지 않았거나 RULE에 대한 쓰기 도구가 준비되지 않았습니다. 연결하고 다시 시도하세요.",
       });
     }
 
@@ -181,9 +181,9 @@ export function PinControlSettingsModal({ isOpen, onClose, onPickColorFromDevice
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{initialRule ? 'Edit Pin Control Rule' : 'Configure Pin Control'}</DialogTitle>
+          <DialogTitle>{initialRule ? '핀 제어 규칙 편집' : '핀 제어 설정'}</DialogTitle>
           <DialogDescription>
-            Set conditions for automatic pin control based on recognized colors.
+            인식된 색상을 기반으로 자동 핀 제어 조건을 설정합니다.
           </DialogDescription>
         </DialogHeader>
         <div className="flex items-center justify-end mb-4">
@@ -194,27 +194,27 @@ export function PinControlSettingsModal({ isOpen, onClose, onPickColorFromDevice
             className="flex items-center gap-2"
           >
             <Palette size={16} />
-            <span>{isPickingColor ? 'Picking Color...' : 'Pick Color from Device'}</span>
+            <span>{isPickingColor ? '색상 선택 중...' : '장치에서 색상 선택'}</span>
           </Button>
         </div>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="colorR" className="text-right">Color R</Label>
+            <Label htmlFor="colorR" className="text-right">색상 R</Label>
             <Input id="colorR" value={colorR} onChange={(e) => setColorR(e.target.value)} className="col-span-3" type="number" min="0" max="255" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="colorG" className="text-right">Color G</Label>
+            <Label htmlFor="colorG" className="text-right">색상 G</Label>
             <Input id="colorG" value={colorG} onChange={(e) => setColorG(e.target.value)} className="col-span-3" type="number" min="0" max="255" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="colorB" className="text-right">Color B</Label>
+            <Label htmlFor="colorB" className="text-right">색상 B</Label>
             <Input id="colorB" value={colorB} onChange={(e) => setColorB(e.target.value)} className="col-span-3" type="number" min="0" max="255" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="pinNumber" className="text-right">Pin Number</Label>
+            <Label htmlFor="pinNumber" className="text-right">핀 번호</Label>
             <Select onValueChange={setPinNumber} value={pinNumber}>
               <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Select a pin" />
+                <SelectValue placeholder="핀 선택" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="2">Pin 2</SelectItem>
@@ -224,10 +224,10 @@ export function PinControlSettingsModal({ isOpen, onClose, onPickColorFromDevice
             </Select>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="pinState" className="text-right">Pin State</Label>
+            <Label htmlFor="pinState" className="text-right">핀 상태</Label>
             <Select onValueChange={(value: 'HIGH' | 'LOW') => setPinState(value)} value={pinState}>
               <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Select state" />
+                <SelectValue placeholder="상태 선택" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="HIGH">HIGH</SelectItem>
@@ -237,7 +237,7 @@ export function PinControlSettingsModal({ isOpen, onClose, onPickColorFromDevice
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleSave}>{initialRule ? 'Save Changes' : 'Add Rule'}</Button>
+          <Button type="submit" onClick={handleSave}>{initialRule ? '변경사항 저장' : '규칙 추가'}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -36,16 +36,16 @@ export function ControlPanel({ sendCommand, isConnected, writer }: ControlPanelP
 
   const handleSendCommand = async (command: string) => {
     if (!isConnected) {
-      toast.error("Not connected to any device");
+      toast.error("장치에 연결되지 않았습니다");
       return;
     }
 
     setIsSending(true);
     try {
       await sendCommand(command);
-      toast.success(`Command sent: ${command}`);
+      toast.success(`명령 전송: ${command}`);
     } catch (error) {
-      toast.error(`Failed to send command: ${error instanceof Error ? error.message : String(error)}`);
+      toast.error(`명령 전송 실패: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setIsSending(false);
     }
@@ -53,7 +53,7 @@ export function ControlPanel({ sendCommand, isConnected, writer }: ControlPanelP
 
   const handlePickColorFromDevice = useCallback((callback: (rgb: { r: number; g: number; b: number }) => void) => {
     setIsWaitingForColorPick(true);
-    toast.info("Waiting for new color data from device...");
+    toast.info("장치에서 새 색상 데이터를 기다리는 중...");
     latestCallbackRef.current = callback;
     if (unsubscribeRef.current) {
       unsubscribeRef.current();
@@ -91,7 +91,7 @@ export function ControlPanel({ sendCommand, isConnected, writer }: ControlPanelP
 
   const handleDeleteRule = (id: string) => {
     deleteRule(id);
-    toast.success('Rule deleted successfully!');
+    toast.success('규칙이 성공적으로 삭제되었습니다!');
   };
 
   const handleRuleSet = (ruleData: ModalRuleSetPayload) => {
@@ -105,10 +105,10 @@ export function ControlPanel({ sendCommand, isConnected, writer }: ControlPanelP
     const existingRule = rules.find(r => r.id === newOrUpdatedRule.id);
     if (existingRule) {
       updateRule(newOrUpdatedRule.id, newOrUpdatedRule);
-      toast.success('Rule updated successfully!');
+      toast.success('규칙이 성공적으로 업데이트되었습니다!');
     } else {
       addRule(newOrUpdatedRule);
-      toast.success('New rule added successfully!');
+      toast.success('새 규칙이 성공적으로 추가되었습니다!');
     }
     setIsModalOpen(false); 
     setEditingRule(undefined); 
@@ -124,7 +124,7 @@ export function ControlPanel({ sendCommand, isConnected, writer }: ControlPanelP
         <CardContent className="p-6">
            <div className="flex items-center gap-2 mb-4">
              <Sliders size={18} />
-             <h2 className="text-xl font-semibold">Control Commands</h2>
+             <h2 className="text-xl font-semibold">제어 명령</h2>
            </div>
 
            <div className="grid grid-cols-2 gap-3">
@@ -135,7 +135,7 @@ export function ControlPanel({ sendCommand, isConnected, writer }: ControlPanelP
               disabled={isSending || !isConnected}
             >
                <Send size={16} />
-               <span>Send Color</span>
+               <span>색상 전송</span>
              </Button>
 
              <Button
@@ -145,7 +145,7 @@ export function ControlPanel({ sendCommand, isConnected, writer }: ControlPanelP
               disabled={isSending || !isConnected}
             >
                <Zap size={16} />
-               <span>LED ON</span>
+               <span>LED 켜기</span>
              </Button>
 
              <Button
@@ -155,7 +155,7 @@ export function ControlPanel({ sendCommand, isConnected, writer }: ControlPanelP
               disabled={isSending || !isConnected}
             >
                <ZapOff size={16} />
-               <span>LED OFF</span>
+               <span>LED 끄기</span>
              </Button>
 
              <Button
@@ -165,7 +165,7 @@ export function ControlPanel({ sendCommand, isConnected, writer }: ControlPanelP
               disabled={isSending || !isConnected}
             >
                <RefreshCw size={16} />
-               <span>Reset Device</span>
+               <span>장치 초기화</span>
              </Button>
 
             <Button
@@ -177,7 +177,7 @@ export function ControlPanel({ sendCommand, isConnected, writer }: ControlPanelP
               className="flex items-center gap-2 col-span-2"
             >
               <Settings size={16} />
-              <span>Configure Auto Pin Control</span>
+              <span>자동 핀 제어 설정</span>
             </Button>
           </div>
         </CardContent>
@@ -187,24 +187,24 @@ export function ControlPanel({ sendCommand, isConnected, writer }: ControlPanelP
         <CardContent className="p-6">
           <div className="flex items-center gap-2 mb-4">
             <Settings size={18} />
-            <h2 className="text-xl font-semibold">Saved Auto Pin Control Rules</h2>
+            <h2 className="text-xl font-semibold">저장된 자동 핀 제어 규칙</h2>
           </div>
           {rules.length === 0 ? (
-            <p className="text-gray-400">No rules saved yet. Configure a new rule above.</p>
+            <p className="text-gray-400">아직 저장된 규칙이 없습니다. 위에서 새 규칙을 설정하세요.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {rules.map((rule) => (
                 <Card key={rule.id} className="p-4">
                   <CardContent>
-                    <p><strong>Color:</strong> <span style={{ backgroundColor: `rgb(${rule.color.r},${rule.color.g},${rule.color.b})`, padding: '2px 8px', borderRadius: '4px', color: 'white', textShadow: '0 0 2px black' }}>RGB({rule.color.r}, {rule.color.g}, {rule.color.b})</span></p>
-                    <p><strong>Pin:</strong> {rule.pinNumber}</p>
-                    <p><strong>State:</strong> {rule.pinState}</p>
+                    <p><strong>색상:</strong> <span style={{ backgroundColor: `rgb(${rule.color.r},${rule.color.g},${rule.color.b})`, padding: '2px 8px', borderRadius: '4px', color: 'white', textShadow: '0 0 2px black' }}>RGB({rule.color.r}, {rule.color.g}, {rule.color.b})</span></p>
+                    <p><strong>핀:</strong> {rule.pinNumber}</p>
+                    <p><strong>상태:</strong> {rule.pinState}</p>
                     <div className="flex justify-end gap-2 mt-4">
                       <Button variant="outline" size="sm" onClick={() => handleEditRule(rule)}>
-                        Edit
+                        수정
                       </Button>
                       <Button variant="destructive" size="sm" onClick={() => handleDeleteRule(rule.id)}>
-                        Delete
+                        삭제
                       </Button>
                     </div>
                   </CardContent>

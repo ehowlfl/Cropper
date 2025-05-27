@@ -75,7 +75,7 @@ export function SerialConnector({
         // but it's good practice if the stream itself isn't immediately destroyed.
         // readerRef.current.releaseLock(); // This can cause issues if cancel() is not fully processed
       } catch (error) {
-        console.error('Error cancelling reader:', error);
+        console.error('리더 취소 오류:', error);
       }
       readerRef.current = null;
     }
@@ -87,7 +87,7 @@ export function SerialConnector({
         await writerRef.current.close();
         // writerRef.current.releaseLock(); // releaseLock is done implicitly by close()
       } catch (error) {
-        console.error('Error closing writer:', error);
+        console.error('라이터 닫기 오류:', error);
       }
       writerRef.current = null;
       // @ts-ignore
@@ -97,9 +97,9 @@ export function SerialConnector({
     if (portRef.current) {
       try {
         await portRef.current.close();
-        console.log('Serial port closed.');
+        console.log('시리얼 포트가 닫혔습니다.');
       } catch (error) {
-        console.error('Error closing port:', error);
+        console.error('포트 닫기 오류:', error);
       }
     }
 
@@ -119,7 +119,7 @@ export function SerialConnector({
   // Function to read data from the serial port
   const readSerialData = async () => {
     if (!portRef.current || !portRef.current.readable || !readerRef.current) {
-      console.log('Port not readable or reader not available for readLoop.');
+      console.log('읽기 루프를 위한 포트가 읽을 수 없거나 리더를 사용할 수 없습니다.');
       return;
     }
     keepReading.current = true;
@@ -137,34 +137,34 @@ export function SerialConnector({
             if (value) {
                 const textDecoder = new TextDecoder();
                 const text = textDecoder.decode(value);
-                console.log('Received raw Uint8Array:', value); // 추가: Raw Uint8Array 출력
-                console.log('Decoded text:', text); // 추가: 디코딩된 텍스트 출력
+                console.log('수신된 원시 Uint8Array:', value); // 추가: Raw Uint8Array 출력
+                console.log('디코딩된 텍스트:', text); // 추가: 디코딩된 텍스트 출력
                 if (onData) onData(text);
             }
         } catch(error) {
             // Handle cases like port being closed mid-read
             if (String(error).includes('port has been closed')) {
-                console.log('Read loop: Port was closed.');
+                console.log('읽기 루프: 포트가 닫혔습니다.');
             } else {
-                console.error('Read loop error:', error);
+                console.error('읽기 루프 오류:', error);
             }
             break; // Exit loop on error
         }
       }
     } catch (error) {
-      console.error('Outer Read loop error:', error);
+      console.error('외부 읽기 루프 오류:', error);
     }
   };
 
   // Connect to serial port
   const connectSerial = async () => {
     if (!isSerialSupported) {
-      alert('Web Serial API is not supported in your browser. Please use Chrome or Edge.');
+      alert('웹 시리얼 API가 브라우저에서 지원되지 않습니다. Chrome 또는 Edge를 사용해주세요.');
       return;
     }
 
     if (portRef.current) {
-      console.log('Already connected or connection attempt in progress.');
+      console.log('이미 연결되었거나 연결 시도 중입니다.');
       return;
     }
 
@@ -175,7 +175,7 @@ export function SerialConnector({
       await port.open({ baudRate: 9600 }); // HC-06 default baud rate is 9600
       
       const portInfo = port.getInfo();
-      setDeviceName(`Serial Port ${portInfo.usbVendorId || ''} ${portInfo.usbProductId || ''}`);
+      setDeviceName(`시리얼 포트 ${portInfo.usbVendorId || ''} ${portInfo.usbProductId || ''}`);
       
       portRef.current = port;
       
@@ -184,10 +184,10 @@ export function SerialConnector({
       // Setup reader first
       if (port.readable) {
         readerRef.current = port.readable.getReader();
-        console.log('Serial reader obtained.');
+        console.log('시리얼 리더를 가져왔습니다.');
         readSerialData(); // Start reading immediately
       } else {
-        console.error('Port is not readable.');
+        console.error('포트를 읽을 수 없습니다.');
       }
 
       // Setup writer
@@ -196,9 +196,9 @@ export function SerialConnector({
         localWriter = writerRef.current;
         // @ts-ignore
         window.serialWriter = writerRef.current; // Kept for potential ongoing user tests
-        console.log('Serial writer ready and assigned to window.serialWriter.');
+        console.log('시리얼 라이터가 준비되었고 window.serialWriter에 할당되었습니다.');
       } else {
-        console.log('No writable port found.');
+        console.log('쓰기 가능한 포트를 찾을 수 없습니다.');
       }
       
       setIsConnected(true); // Set connected status
@@ -206,8 +206,8 @@ export function SerialConnector({
         onConnect(port, localWriter); // Pass port and the obtained writer (or null)
       }
     } catch (error) {
-      console.error('Error connecting to serial port:', error);
-      alert(`Failed to connect: ${error instanceof Error ? error.message : String(error)}`);
+      console.error('시리얼 포트 연결 오류:', error);
+      alert(`연결 실패: ${error instanceof Error ? error.message : String(error)}`);
       // Ensure refs are cleared on failure
       portRef.current = null;
       readerRef.current = null;
@@ -248,7 +248,7 @@ export function SerialConnector({
     >
       {!isSerialSupported && (
         <Badge variant="destructive" className="mr-2">
-          Web Serial API not supported
+          웹 시리얼 API 미지원
         </Badge>
       )}
       
@@ -261,19 +261,19 @@ export function SerialConnector({
         {isConnecting ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" />
-            <span>Connecting...</span>
+            <span>연결 중...</span>
           </>
         ) : (
           <>
             {isConnected ? <Usb className="h-4 w-4" /> : <Cable className="h-4 w-4" />}
-            <span>{isConnected ? 'Disconnect' : 'Connect HC-06'}</span>
+            <span>{isConnected ? '연결 해제' : 'HC-06 연결'}</span>
           </>
         )}
       </Button>
       
       {isConnected && (
         <Badge variant="outline" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
-          Connected: {deviceName || 'Serial Device'}
+          연결됨: {deviceName || '시리얼 장치'}
         </Badge>
       )}
     </motion.div>
